@@ -1,7 +1,6 @@
 example/example
 *.o
 *.obj
-*.a
 *.elf
 *.map
 

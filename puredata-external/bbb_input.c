@@ -38,7 +38,6 @@
 typedef struct input {
    t_object x_obj;
    t_outlet *outlet_left;
-   /* t_outlet *outlet_right; */
 
    unsigned long time;
    unsigned long previous_time;
@@ -53,70 +52,15 @@ typedef struct input {
 t_class *bbb_input_class;
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Received PD Messages
-// 
-
-// Received "analog" message, with parameters
-/* static void bbb_input_analog(t_input* x, t_symbol* s, int argc, t_atom* argv) { */
-/*    UNUSED_PARAMETER(s); */
-/* } */
-
-// Received "digital" message, with parameters
-/* static void bbb_input_digital(t_input* x, t_symbol* s, int argc, t_atom* argv) { */
-/*    UNUSED_PARAMETER(s); */
-/* } */
-
-/* struct timeval t; */
-
 static void clock_tick(t_input *x){
-   clock_delay(x->clock, 0.666); // 0.666 milliseconds
+   clock_delay(x->clock, 10.0); // milliseconds
 
    // Read messages from PRU.
    unsigned int message;
-   float channel_number, value;
-   t_atom list[2];
    while(bbb_pruio_messages_are_available()){
       bbb_pruio_read_message(&message);
-
-      // 16 MSB are the channel number, 16 LSB are the value;
-      channel_number = message >> 16;
-      value = message & 0xffff;
-      /* post("%f %f", channel_number, value); */
-
-      SETFLOAT(&list[0], channel_number);
-      SETFLOAT(&list[1], value);
-      outlet_list(x->outlet_left, gensym("list"), 2, list);
+      outlet_float(x->outlet_left, message);
    }
-
-
-
-
-
-
-
-
-
-
-   /* struct timespec t; */
-   /* clock_gettime(CLOCK_MONOTONIC,&t); */
-   /* x->previous_time = x->time; */
-   /* x->time = 1000000000*t.tv_sec + t.tv_nsec; */
-   /* x->average_time += x->average_time; */
-
-   /* gettimeofday(&t,NULL); */
-   /* x->previous_time = x->time; */
-   /* x->time = (long)t.tv_usec; */
-
-   /* x->previous_time = x->time; */
-   /* x->time = clock_getlogicaltime(); */
-
-   /* x->counter ++; */
-   /* if(x->counter > 1000){ */
-   /*    post("time: %lu", x->time - x->previous_time); */
-   /*    x->counter = 0; */
-   /* } */
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -127,21 +71,18 @@ static void *bbb_input_new(void) {
    t_input *x = (t_input *)pd_new(bbb_input_class);
    x->outlet_left = outlet_new(&x->x_obj, &s_anything);
    x->clock = clock_new(x, (t_method)clock_tick);
-   x->counter = 0;
-   x->time = 0;
-   /* x->previous_time = 0; */
 
    // Use a pd clock to tick every 0.666 millisecond
-   clock_delay(x->clock, 0.666);
+   clock_delay(x->clock, 10);
 
-   bbb_pruio_start_adc();
+   bbb_pruio_start();
 
    return (void *)x;
 }
 
 static void bbb_input_free(t_input *x) { 
    clock_free(x->clock);
-   bbb_pruio_stop_adc();
+   bbb_pruio_stop();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -150,6 +91,4 @@ static void bbb_input_free(t_input *x) {
 
 void bbb_input_setup(void) {
    bbb_input_class = class_new(gensym("bbb_input"), (t_newmethod)bbb_input_new, (t_method)bbb_input_free, sizeof(t_input), CLASS_DEFAULT, (t_atomtype)0);
-   /* class_addmethod(bbb_input_class, (t_method)bbb_input_digital, gensym("digital"), A_GIMME, 0); */
-   /* class_addmethod(bbb_input_class, (t_method)bbb_input_analog, gensym("analog"), A_GIMME, 0); */
 }
