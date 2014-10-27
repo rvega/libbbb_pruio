@@ -3,9 +3,9 @@
 # Constants
 #
 
-PREFIX=/usr
+# PREFIX=/usr
 # PREFIX=/usr/local
-# PREFIX=/root/libbbb_pruio/repo/library
+PREFIX=/root/maqueta/repo/vendors/libbbb_pruio/library
 
 # Make makefile silent, you can do `VERBOSE=1 make whatever` to get messages
 ifndef VERBOSE

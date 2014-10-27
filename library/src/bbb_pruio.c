@@ -25,10 +25,10 @@ static void buffer_init();
 static int start_pru0_program();
 
 /////////////////////////////////////////////////////////////////////
-// "Public" functions. ADC API.
+// "Public" functions. 
 //
 
-int bbb_pruio_start_adc(){
+int bbb_pruio_start(){
    int err;
    if(load_device_tree_overlay()){
       fprintf(stderr, "libbbb_pruio: Could not load device tree overlay.\n");
@@ -52,12 +52,10 @@ int bbb_pruio_start_adc(){
 
 /* int bbb_pruio_init_adc_pin(unsigned int pin_number, unsigned int steps, bbb_pruio_adc_callback){ */
 /*  */
-/*    adc_callbacks[pin_number] = callback; */
-/*  */
 /*    return 0; */
 /* } */
 
-int bbb_pruio_stop_adc(){
+int bbb_pruio_stop(){
    // TODO: send terminate message to PRU
 
    prussdrv_pru_disable(0);
@@ -119,107 +117,16 @@ static int start_pru0_program(){
    char path[512] = "";
    strcat(path, BBB_PRUIO_PREFIX); 
    strcat(path, "/lib/libbbb_pruio_data0.bin");
+   /* printf("%s\n",path); */
    if(prussdrv_load_datafile(0, path)) return 1;
 
    strcpy(path, BBB_PRUIO_PREFIX); 
    strcat(path, "/lib/libbbb_pruio_text0.bin");
+   /* printf("%s\n",path); */
    if(prussdrv_exec_program_at(0, path, BBB_PRUIO_START_ADDR_0)) return 1;
 
    return 0;
 }
-
-
-/////////////////////////////////////////////////////////////////////
-// A thread to wait for ADC interrupts from PRU0
-//
-
-/* static void* adc_thread_function(void* param){ */
-   /* struct timespec t; */
-   /* unsigned long long time, previous_time; */
-   /* clock_gettime(CLOCK_MONOTONIC,&t); */
-   /* time = 1000000000*t.tv_sec + t.tv_nsec; */
-   /* previous_time = time; */
-
-
-   /* unsigned int message = 0; */
-   /* unsigned int data = 0; */
-   /* unsigned int overrun_counter = 99999; */
-   /* while(1){ */
-   /*    prussdrv_pru_wait_event(PRU_EVTOUT_0); */
-   /*    prussdrv_pru_clear_event(PRU_EVTOUT_0, PRU0_ARM_INTERRUPT); */
-
-   /*    while(!buffer_is_empty()){ */
-   /*       buffer_read(&message); */
-   /*    #<{(|    data = message; |)}># */
-   /*    } */
-
-
-   /*    #<{(| clock_gettime(CLOCK_MONOTONIC,&t); |)}># */
-   /*    #<{(| previous_time = time; |)}># */
-   /*    #<{(| time = 1000000000*t.tv_sec + t.tv_nsec; |)}># */
-   /*    #<{(| overrun_counter ++; |)}># */
-   /*    #<{(| if(overrun_counter > 100){ |)}># */
-   /*    #<{(|    printf("overruns: %u\n", shared_ram[1026]); |)}># */
-   /*    #<{(|    printf("time: %llu\n", (time-previous_time)/1000); |)}># */
-   /*    #<{(|    overrun_counter=0; |)}># */
-   /*    #<{(| } |)}># */
-
-
-
-   /*    #<{(| usleep(1000); |)}># */
-   /* } */
-   /* printf("%u\n", data); */
-
-   /* printf("%u messages received %u\n", i, data[0]); */
-   /* printf("%u overruns\n", overruns); */
-   /* printf("A\n"); */
-   /* printf("%u overruns\n", 65541-i); */
-
-
-   /* unsigned int i; */
-
-   /* unsigned int data[1000][15]; */
-   /* unsigned int data_counter = 0; */
-   /* unsigned int datum = 0; */
-   /* while(data_counter < 1000){ */
-   /*    // Wait for interrupt from PRU */
-   /*    prussdrv_pru_wait_event(PRU_EVTOUT_0); */
-   /*    prussdrv_pru_clear_event(PRU_EVTOUT_0, PRU0_ARM_INTERRUPT); */
-
-   /*    clock_gettime(CLOCK_MONOTONIC,&t); */
-   /*    previous_time = time; */
-   /*    time = 1000000000*t.tv_sec + t.tv_nsec; */
-   /*    #<{(| printf("time: %lu", (time-previous_time)/1000); |)}># */
-   /*  */
-   /*    data[data_counter][0] = (time-previous_time)/1000; */
-
-   /*    i = 1; */
-   /*    while(!buffer_is_empty()){ */
-   /*       buffer_read(&datum); */
-   /*       #<{(| printf("%8X\n",datum); |)}># */
-   /*       data[data_counter][i] = datum; */
-   /*       i++; */
-   /*    } */
-
-   /*    data_counter++; */
-
-   /*    #<{(| usleep(1000); |)}># */
-   /*    #<{(| (*adc_callbacks[1])(64, 64); |)}># */
-   /*    #<{(| (*adc_callbacks[2])(3, 87); |)}># */
-   /* } */
-
-   /* printf("\n\n*****\n"); */
-   /* int j; */
-   /* for(i=0; i<1000; i++){ */
-   /*    printf("%u ",data[i][0]); */
-   /*    for(j=1; j<15; j++){ */
-   /*       printf("%8X ",data[i][j]); */
-   /*    }  */
-   /*    printf("\n"); */
-   /* } */
-
-   /* return 0; */
-/* } */
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -31,33 +31,18 @@ int main(int argc, const char *argv[]){
    // Listen to SIGINT signals (program termination)
    signal(SIGINT, signal_handler);
 
-   bbb_pruio_start_adc();
-
-   unsigned int data[100000];
-   unsigned int data_counter = 0;
+   bbb_pruio_start();
 
    unsigned int message;
-   while(!finished && data_counter<10000){
+   while(!finished){
       while(bbb_pruio_messages_are_available()){
          bbb_pruio_read_message(&message);
-         data[data_counter] = message;
-         data_counter++;
+         printf("%u\n", message);
       }
-      usleep(13000); 
+      usleep(10000);
    }
 
-
-   int i, overruns = 0;
-   for(i=0; i<10000; i++){
-      if(i>0 && (data[i]-1 != data[i-1])){
-         printf("\n%u: %u %u", i, data[i], data[i-1]);   
-         printf(" <-- !!!!");
-         overruns += (data[i] - data[i-1] - 1);
-      }
-   }
-   printf("\nOverruns: %i\n", overruns);
-
-   bbb_pruio_stop_adc();
+   bbb_pruio_stop();
 
    return 0;
 }

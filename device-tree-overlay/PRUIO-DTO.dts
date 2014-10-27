@@ -12,6 +12,7 @@
          pinctrl_pruio: pinmux_pinctrl_pruio{
             pinctrl-single,pins = < 
                /* PINMUX IS DONE AT RUNTIME, BE CAREFUL! */
+               0x070 0x27  /* P9_11 input pulldown */
             >;
          };
       };

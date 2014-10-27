@@ -19,12 +19,12 @@
 /**
  * Initializes PRU, GPIO and ADC hardware and starts sampling ADC channels.
  */
-int bbb_pruio_start_adc();
+int bbb_pruio_start();
 
 /**
- * Stops PRU and ADC hardware, no more samples are aquired.
+ * Stops PRU hardware, no more samples are aquired.
  */
-int bbb_pruio_stop_adc();
+int bbb_pruio_stop();
 
 /**
  * Configures how an ADC channel is read
