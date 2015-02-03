@@ -1,5 +1,7 @@
 # Lib BBB Pruio
 
+There is a newer, maintained fork at [https://github.com/outer-space-sounds/beaglebone-pruio](https://github.com/outer-space-sounds/beaglebone-pruio)
+
 This is a software library that allows access to the General Purpose Inputs and Outputs and the Digital Analog Converters in the [Beagle Bone Black single board computer](http://beagleboard.org/black).  
 
 ## Features
